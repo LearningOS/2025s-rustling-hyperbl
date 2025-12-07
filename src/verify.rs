@@ -17,9 +17,11 @@ pub fn verify<'a>(
     let (num_done, total) = progress;
     let bar = ProgressBar::new(total as u64);
     let mut percentage = num_done as f32 / total as f32 * 100.0;
-    bar.set_style(ProgressStyle::default_bar()
-        .template("Progress: [{bar:60.green/red}] {pos}/{len} {msg}")
-        .progress_chars("#>-")
+    bar.set_style(
+        ProgressStyle::default_bar()
+            .template("Progress: [{bar:60.green/red}] {pos}/{len} {msg}")
+            .unwrap()
+            .progress_chars("#>-")
     );
     bar.set_position(num_done as u64);
     bar.set_message(format!("({:.1} %)", percentage));
@@ -57,7 +59,7 @@ pub fn test(exercise: &Exercise, verbose: bool) -> Result<(), ()> {
 fn compile_only(exercise: &Exercise, success_hints: bool) -> Result<bool, ()> {
     let progress_bar = ProgressBar::new_spinner();
     progress_bar.set_message(format!("Compiling {exercise}..."));
-    progress_bar.enable_steady_tick(100);
+    progress_bar.enable_steady_tick(std::time::Duration::from_millis(100));
 
     let _ = compile(exercise, &progress_bar)?;
     progress_bar.finish_and_clear();
@@ -69,7 +71,7 @@ fn compile_only(exercise: &Exercise, success_hints: bool) -> Result<bool, ()> {
 fn compile_and_run_interactively(exercise: &Exercise, success_hints: bool) -> Result<bool, ()> {
     let progress_bar = ProgressBar::new_spinner();
     progress_bar.set_message(format!("Compiling {exercise}..."));
-    progress_bar.enable_steady_tick(100);
+    progress_bar.enable_steady_tick(std::time::Duration::from_millis(100));
 
     let compilation = compile(exercise, &progress_bar)?;
 
@@ -95,7 +97,7 @@ fn compile_and_run_interactively(exercise: &Exercise, success_hints: bool) -> Re
 fn compile_and_test(exercise: &Exercise, run_mode: RunMode, verbose: bool, success_hints: bool) -> Result<bool, ()> {
     let progress_bar = ProgressBar::new_spinner();
     progress_bar.set_message(format!("Testing {exercise}..."));
-    progress_bar.enable_steady_tick(100);
+    progress_bar.enable_steady_tick(std::time::Duration::from_millis(100));
 
     let compilation = compile(exercise, &progress_bar)?;
     let result = compilation.run();
